@@ -1,0 +1,13 @@
+# Jogos e BIOS ficam apenas na instalação local.
+/jogos/
+/bios/
+/dados/bios/
+
+# Dados gerados durante o uso do emulador.
+/dados/cache/
+/dados/logs/
+/dados/memcards/
+/dados/sstates/
+/dados/snaps/
+/dados/videos/
+/dados/inis/playtime.dat
