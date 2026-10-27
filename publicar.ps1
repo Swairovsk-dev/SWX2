@@ -42,8 +42,12 @@ Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zip -Compression
 Remove-Item $stage -Recurse -Force
 
 # 4. Envia o código do pacote e cria a release com o zip.
+#    git e gh escrevem progresso no stderr; o resultado vem do código de saída.
+$ErrorActionPreference = 'Continue'
 git add -A
 git commit -m "SWX2 $tag" -m $Notas
-git push
+git push 2>&1 | Out-Host
+if ($LASTEXITCODE -ne 0) { throw "git push falhou ($LASTEXITCODE)" }
 gh release create $tag $zip --title "SWX2 $tag" --notes $Notas
+if ($LASTEXITCODE -ne 0) { throw "gh release falhou ($LASTEXITCODE)" }
 Write-Host "Pronto: $tag publicada."
