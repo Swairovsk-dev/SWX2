@@ -1,0 +1,15 @@
+{
+    "controls_have_equal_height": true,
+    "grid_list_grouped": true,
+    "narrow_controls_do_not_overlap": true,
+    "narrow_search_row_fits": true,
+    "region_options_preserved": true,
+    "region_popup_bounded": true,
+    "region_popup_height": 328,
+    "region_popup_scrolls": true,
+    "region_popup_visible": true,
+    "region_rows_readable": true,
+    "search_expands_without_gaps": true,
+    "search_region_sort_aligned": true,
+    "sort_popup_compact": true
+}

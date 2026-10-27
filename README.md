@@ -6,6 +6,10 @@
 
 [Português](#português) · [English](#english)
 
+**Interface launcher:** biblioteca com sidebar, busca, favoritos, painel de detalhes e configurações por jogo. Tema e instruções de compilação: [código da interface](source/README.md).
+
+**Launcher interface:** a library with sidebar navigation, search, favorites, game details, and per-game settings. Theme and build instructions: [interface source](source/README.md).
+
 ## Português
 
 ### O que é o SWX2?
