@@ -1,0 +1,11 @@
+﻿SWX2 v1.0 - Emulador de PlayStation 2
+
+jogos\   Coloque aqui os jogos (.iso, .chd, .cso, .bin). Aparecem sozinhos na lista.
+bios\    Coloque aqui a BIOS extraida do seu PS2.
+dados\   Configuracoes, saves, capas e estados salvos. Nao apague.
+SWX2.exe Abre o emulador.
+
+Controle: conecte e ele e configurado sozinho na porta 1.
+Capa: clique com o botao direito no jogo > Definir imagem de capa.
+
+Baseado no PCSX2 (GPL v3). Licencas em licencas\.
