@@ -111,8 +111,9 @@ QWidget#swDetailsBody[compactPreview="true"] QPushButton#swGameSettings,
 QWidget#swDetailsBody[compactPreview="true"] QPushButton#swFavorite { border-radius: 14px; }
 
 /* Sidebar footer actions: same size, full width, left aligned. */
-QPushButton#swSideAction, QToolButton#swSideAction { text-align: left; padding: 0 14px; min-height: 40px; max-height: 40px; border-radius: @glass.navRadius@px; background: rgba(255,255,255,10); border: 1px solid rgba(255,255,255,30); border-top-color: rgba(255,255,255,45); font-weight: 600; }
-QPushButton#swSideAction:hover, QToolButton#swSideAction:hover { background: rgba(255,255,255,24); }
+QPushButton#swSideAction, QToolButton#swSideAction { text-align: left; padding: 0 14px; min-height: 40px; max-height: 40px; border-radius: @glass.navRadius@px; background: transparent; border: 1px solid transparent; font-weight: 400; color: rgba(255,255,255,184); }
+QPushButton#swSideAction:hover, QToolButton#swSideAction:hover { background: rgba(255,255,255,22); color: @glass.text@; }
+QToolButton#swSideAction::menu-indicator { image: none; width: 0; }
 QPushButton#swPreviewCopy, QPushButton#swPreviewFolder { padding: 0 12px; min-height: 36px; max-height: 36px; border-radius: 12px; }
 
 /* Settings window. */
@@ -157,3 +158,12 @@ QListWidget#settingsCategory { outline: none; }
 QPushButton:default { background: @button-accent@; border-color: rgba(255,255,255,90); color: white; }
 QPushButton:default:disabled { background: rgba(255,255,255,8); border-color: rgba(255,255,255,20); color: #A0A7B8; }
 QDialogButtonBox QPushButton { min-width: 72px; }
+
+/* Library list: glass header and one sunken stats block in the details panel */
+QHeaderView#swGameTableHeader, QHeaderView#swGameTableHeader::section { background: transparent; border: none; }
+QTableView#swGameTable { selection-background-color: transparent; }
+QFrame#swStatsBlock { background: rgba(0,0,0,@glass.statAlpha255@); border: 1px solid rgba(255,255,255,22); border-radius: @glass.statRadius@px; }
+QFrame#swStatsBlock QLabel#swStats { background: transparent; border: none; border-radius: 0; }
+QFrame#swStatsBlock QLabel#swStats[cell="0"] { border-right: 1px solid rgba(255,255,255,20); border-bottom: 1px solid rgba(255,255,255,20); }
+QFrame#swStatsBlock QLabel#swStats[cell="1"] { border-bottom: 1px solid rgba(255,255,255,20); }
+QFrame#swStatsBlock QLabel#swStats[cell="2"] { border-right: 1px solid rgba(255,255,255,20); }
