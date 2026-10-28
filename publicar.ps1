@@ -44,6 +44,8 @@ Remove-Item $stage -Recurse -Force
 # 4. Envia o código do pacote e cria a release com o zip.
 #    git e gh escrevem progresso no stderr; o resultado vem do código de saída.
 $ErrorActionPreference = 'Continue'
+# Windows PowerShell 5.1 drops embedded double quotes when passing arguments to git/gh.
+$Notas = $Notas -replace '"', '\"'
 git add -A
 git commit -m "SWX2 $tag" -m $Notas
 git push 2>&1 | Out-Host
