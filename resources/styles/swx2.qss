@@ -167,3 +167,18 @@ QFrame#swStatsBlock QLabel#swStats { background: transparent; border: none; bord
 QFrame#swStatsBlock QLabel#swStats[cell="0"] { border-right: 1px solid rgba(255,255,255,20); border-bottom: 1px solid rgba(255,255,255,20); }
 QFrame#swStatsBlock QLabel#swStats[cell="1"] { border-bottom: 1px solid rgba(255,255,255,20); }
 QFrame#swStatsBlock QLabel#swStats[cell="2"] { border-right: 1px solid rgba(255,255,255,20); }
+
+/* Toolbar glass: every control follows the pill shape of its panel */
+QLineEdit#searchText { background: rgba(0,0,0,40); border: 1px solid rgba(255,255,255,14); border-radius: 21px; padding: 0 18px; }
+QLineEdit#searchText:focus { background: rgba(0,0,0,56); border-color: @accent@; }
+QComboBox#filterRegion, QComboBox#swSort { border-radius: 21px; background: rgba(255,255,255,14); border: 1px solid rgba(255,255,255,26); border-top-color: rgba(255,255,255,46); padding-left: 16px; }
+QComboBox#filterRegion:hover, QComboBox#swSort:hover { background: rgba(255,255,255,24); }
+QComboBox#filterRegion::drop-down, QComboBox#swSort::drop-down { width: 34px; }
+QToolButton#swMore { border-radius: 21px; background: rgba(255,255,255,14); border: 1px solid rgba(255,255,255,26); border-top-color: rgba(255,255,255,46); }
+QToolButton#swMore:hover { background: rgba(255,255,255,26); }
+QToolButton#swMore::menu-indicator { image: none; width: 0; }
+QFrame#swViewSwitch { background: rgba(0,0,0,40); border: 1px solid rgba(255,255,255,22); border-top-color: rgba(255,255,255,34); }
+QPushButton#swDetailsToggle { border-radius: 21px; padding: 0 16px; }
+QComboBox#filterRegion { padding-left: 12px; padding-right: 30px; }
+QComboBox#filterRegion::drop-down { width: 30px; }
+QLabel#swCredit { color: rgba(255,255,255,120); font-size: 8pt; letter-spacing: 1px; padding: 2px 0; }
