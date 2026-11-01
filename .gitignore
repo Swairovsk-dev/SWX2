@@ -11,3 +11,7 @@
 /dados/snaps/
 /dados/videos/
 /dados/inis/playtime.dat
+
+# Estado e cópias de segurança locais.
+/state/
+*.bak

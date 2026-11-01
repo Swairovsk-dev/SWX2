@@ -1,4 +1,4 @@
-# Publica uma nova versão do SWX2 no GitHub (Swairovsk-dev/SWX2).
+﻿# Publica uma nova versão do SWX2 no GitHub (Swairovsk-dev/SWX2).
 # Quem já tem o SWX2 recebe o aviso de atualização ao abrir o programa.
 #
 # Uso:  .\publicar.ps1 -Notas "o que mudou"
@@ -6,11 +6,18 @@
 param(
   [string]$Notas = 'Melhorias e correções.',
   [string]$Versao = '',
-  [string]$Fonte = 'C:\Users\dougl\Documents\GitHub\pcsx2'
+  [string]$Fonte = $(if ($env:SWX2_FONTE) { $env:SWX2_FONTE } else { 'C:\Users\dougl\Documents\GitHub\pcsx2' })
 )
 $ErrorActionPreference = 'Stop'
 $app = $PSScriptRoot
 Set-Location $app
+
+# 0. Confere o login no gh antes de mexer em versão, zip ou commit.
+$ErrorActionPreference = 'Continue'
+gh auth status *> $null
+$logado = $LASTEXITCODE -eq 0
+$ErrorActionPreference = 'Stop'
+if (-not $logado) { throw 'gh não está logado. Rode: gh auth login' }
 
 # 1. Nova versão: soma 1 no último número, a menos que -Versao seja dado.
 $atual = (Get-Content (Join-Path $app 'versao.txt') -Raw).Trim()
@@ -26,6 +33,11 @@ if (Test-Path "$Fonte\bin\SWX2.exe") {
   Copy-Item "$Fonte\bin\SWX2.exe" $app -Force
   robocopy "$Fonte\bin\resources" "$app\resources" /E /NFL /NDL /NJH /NJS | Out-Null
   if ($LASTEXITCODE -ge 8) { throw "Falha ao copiar resources ($LASTEXITCODE)" }
+
+  # Registra de qual commit do PCSX2 veio o build (a GPL pede o fonte correspondente).
+  $commit = (git -C $Fonte rev-parse --short HEAD).Trim()
+  if (git -C $Fonte status --porcelain) { $commit += ' + alterações locais (source/swx2-frontend.patch)' }
+  $Notas += "`n`nCódigo-fonte: PCSX2 $commit"
 }
 Set-Content (Join-Path $app 'versao.txt') $Versao -NoNewline -Encoding ascii
 
@@ -46,7 +58,8 @@ Remove-Item $stage -Recurse -Force
 $ErrorActionPreference = 'Continue'
 # Windows PowerShell 5.1 drops embedded double quotes when passing arguments to git/gh.
 $Notas = $Notas -replace '"', '\"'
-git add -A
+# dados/ fica de fora: são as configurações e capas desta máquina, não do pacote.
+git add -A -- . ':(exclude)dados'
 git commit -m "SWX2 $tag" -m $Notas
 git push 2>&1 | Out-Host
 if ($LASTEXITCODE -ne 0) { throw "git push falhou ($LASTEXITCODE)" }

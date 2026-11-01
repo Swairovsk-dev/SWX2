@@ -1,4 +1,4 @@
-﻿SWX2 v1.0 - Emulador de PlayStation 2
+﻿SWX2 - Emulador de PlayStation 2
 
 jogos\   Coloque aqui os jogos (.iso, .chd, .cso, .bin). Aparecem sozinhos na lista.
 bios\    Coloque aqui a BIOS extraida do seu PS2.
