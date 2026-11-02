@@ -159,6 +159,14 @@ QPushButton:default { background: @button-accent@; border-color: rgba(255,255,25
 QPushButton:default:disabled { background: rgba(255,255,255,8); border-color: rgba(255,255,255,20); color: #A0A7B8; }
 QDialogButtonBox QPushButton { min-width: 72px; }
 
+/* "Continuar de onde parou?" dialog: equal-height rounded buttons, quiet destructive action. */
+QDialog#swResumeDialog QLabel#swDialogTitle { font-size: 15pt; font-weight: 700; color: @glass.text@; }
+QDialog#swResumeDialog QLabel#swDialogHint { color: @glass.secondaryText@; }
+QDialog#swResumeDialog QPushButton { min-height: 40px; max-height: 40px; padding: 0 18px; border-radius: 12px; }
+QDialog#swResumeDialog QPushButton#swPrimary { min-height: 40px; max-height: 40px; padding: 0 22px; border-radius: 12px; }
+QDialog#swResumeDialog QPushButton#swDanger { background: transparent; border-color: transparent; color: #FF9A8F; }
+QDialog#swResumeDialog QPushButton#swDanger:hover { background: rgba(255,110,96,30); border-color: rgba(255,110,96,70); }
+
 /* Library list: glass header and one sunken stats block in the details panel */
 QHeaderView#swGameTableHeader, QHeaderView#swGameTableHeader::section { background: transparent; border: none; }
 QTableView#swGameTable { selection-background-color: transparent; }
