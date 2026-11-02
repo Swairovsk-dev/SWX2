@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel SWX2</title>
+<style>
+  :root {
+    --bg: #f4f4f6; --card: #ffffff; --text: #1b1b1f; --muted: #6b6b76; --line: #e3e3e8;
+    --accent: #ff8a3d; --ok: #1f9d55;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #121216; --card: #1c1c22; --text: #ececf1; --muted: #9a9aa6; --line: #2c2c34; --ok: #3ccf7a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, "Segoe UI", sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+  h1 { font-size: 22px; margin: 0; }
+  h1 span { color: var(--accent); }
+  h2 { font-size: 15px; margin: 0 0 12px; color: var(--muted); font-weight: 600; }
+  .updated { color: var(--muted); font-size: 13px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .tile .n { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tile .l { color: var(--muted); font-size: 13px; }
+  .tile.live .n { color: var(--ok); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  .full { grid-column: 1 / -1; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 7px 4px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; }
+  td.num, th.num { text-align: right; }
+  .serial { color: var(--muted); font-size: 12px; }
+  .empty { color: var(--muted); padding: 8px 0; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); margin-right: 6px; }
+  .bars { display: flex; align-items: flex-end; gap: 3px; height: 120px; }
+  .bars div { flex: 1; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 2px; opacity: .85; }
+  .bars div:hover { opacity: 1; }
+  .axis { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-top: 6px; }
+  .scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1><span>SWX2</span> painel</h1>
+    <div class="updated" id="updated">carregando…</div>
+  </header>
+
+  <section class="tiles">
+    <div class="card tile live"><div class="n" id="playing">–</div><div class="l">jogando agora</div></div>
+    <div class="card tile"><div class="n" id="online">–</div><div class="l">com o SWX2 aberto</div></div>
+    <div class="card tile"><div class="n" id="activeWeek">–</div><div class="l">ativos em 7 dias</div></div>
+    <div class="card tile"><div class="n" id="newWeek">–</div><div class="l">novos em 7 dias</div></div>
+    <div class="card tile"><div class="n" id="installs">–</div><div class="l">instalações no total</div></div>
+  </section>
+
+  <section class="grid">
+    <div class="card full">
+      <h2>Jogando agora</h2>
+      <div class="scroll"><table><thead><tr><th>Jogo</th><th>Jogador</th><th>Versão</th><th class="num">Há</th></tr></thead>
+      <tbody id="playingNow"></tbody></table></div>
+    </div>
+    <div class="card">
+      <h2>Jogos mais jogados (7 dias)</h2>
+      <div class="scroll"><table><thead><tr><th>Jogo</th><th class="num">Jogadores</th><th class="num">Tempo</th></tr></thead>
+      <tbody id="topGames"></tbody></table></div>
+    </div>
+    <div class="card">
+      <h2>Versões em uso (7 dias)</h2>
+      <table><thead><tr><th>Versão</th><th class="num">Instalações</th></tr></thead>
+      <tbody id="versions"></tbody></table>
+    </div>
+    <div class="card full">
+      <h2>Pessoas por dia (30 dias)</h2>
+      <div class="bars" id="daily"></div>
+      <div class="axis"><span id="dayFirst"></span><span id="dayLast"></span></div>
+    </div>
+  </section>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const minutes = (m) => m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`;
+  const ago = (ms) => minutes(Math.max(0, Math.round(ms / 60000)));
+  const empty = (cols, text) => `<tr><td colspan="${cols}" class="empty">${text}</td></tr>`;
+  const game = (r) => `${esc(r.game)}${r.serial ? ` <span class="serial">${esc(r.serial)}</span>` : ''}`;
+
+  function render(s) {
+    for (const k of ['playing', 'online', 'activeWeek', 'newWeek', 'installs']) $(k).textContent = s[k];
+
+    $('playingNow').innerHTML = s.playingNow.length ? s.playingNow.map((r) =>
+      `<tr><td><span class="dot"></span>${game(r)}</td><td class="serial">#${esc(r.who)}</td><td>${esc(r.version || '?')}</td><td class="num">${ago(s.now - r.since)}</td></tr>`).join('')
+      : empty(4, 'Ninguém jogando agora.');
+
+    $('topGames').innerHTML = s.topGames.length ? s.topGames.map((r) =>
+      `<tr><td>${game(r)}</td><td class="num">${r.players}</td><td class="num">${minutes(r.minutes)}</td></tr>`).join('')
+      : empty(3, 'Ainda sem dados.');
+
+    $('versions').innerHTML = s.versions.length ? s.versions.map((r) =>
+      `<tr><td>${esc(r.version)}</td><td class="num">${r.n}</td></tr>`).join('')
+      : empty(2, 'Ainda sem dados.');
+
+    // 30 dias seguidos, com zero nos dias sem ninguém.
+    const byDay = new Map(s.daily.map((d) => [d.day, d.n]));
+    const days = [];
+    for (let i = 29; i >= 0; i--) {
+      const day = new Date(s.now - i * 86400000).toISOString().slice(0, 10);
+      days.push({ day, n: byDay.get(day) || 0 });
+    }
+    const max = Math.max(1, ...days.map((d) => d.n));
+    $('daily').innerHTML = days.map((d) =>
+      `<div style="height:${(d.n / max) * 100}%" title="${d.day.split('-').reverse().join('/')}: ${d.n}"></div>`).join('');
+    const label = (d) => d.day.slice(5).split('-').reverse().join('/');
+    $('dayFirst').textContent = label(days[0]);
+    $('dayLast').textContent = label(days[days.length - 1]);
+
+    $('updated').textContent = `atualizado ${new Date(s.now).toLocaleTimeString('pt-BR')} · atualiza a cada 30 s`;
+  }
+
+  async function load() {
+    try {
+      // location.origin never carries user:password, which fetch() refuses.
+      const r = await fetch(location.origin + '/api/stats', { cache: 'no-store', credentials: 'same-origin' });
+      if (r.ok) render(await r.json());
+      else $('updated').textContent = `erro ${r.status}`;
+    } catch {
+      $('updated').textContent = 'sem conexão com o servidor';
+    }
+  }
+  load();
+  setInterval(load, 30000);
+</script>
+</body>
+</html>

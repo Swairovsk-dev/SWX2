@@ -45,13 +45,16 @@ Set-Content (Join-Path $app 'versao.txt') $Versao -NoNewline -Encoding ascii
 $stage = Join-Path $env:TEMP 'swx2-release'
 if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
 robocopy $app $stage /E /NFL /NDL /NJH /NJS `
-  /XD (Join-Path $app '.git') (Join-Path $app 'dados') (Join-Path $app 'jogos') (Join-Path $app 'bios') (Join-Path $app 'source') (Join-Path $app 'state') `
+  /XD (Join-Path $app '.git') (Join-Path $app 'dados') (Join-Path $app 'jogos') (Join-Path $app 'bios') (Join-Path $app 'source') (Join-Path $app 'state') (Join-Path $app 'painel') `
   /XF '*.bak' 'publicar.ps1' '.gitignore' '.gitattributes' 'portable.txt' | Out-Null
 if ($LASTEXITCODE -ge 8) { throw "Falha ao montar o pacote ($LASTEXITCODE)" }
 $zip = Join-Path $env:TEMP 'SWX2-update.zip'
 if (Test-Path $zip) { Remove-Item $zip -Force }
 Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zip -CompressionLevel Optimal
 Remove-Item $stage -Recurse -Force
+# O SWX2 só instala a atualização se o SHA-256 do zip baixado bater com este arquivo.
+$sha = "$zip.sha256"
+(Get-FileHash $zip -Algorithm SHA256).Hash | Set-Content $sha -NoNewline -Encoding ascii
 
 # 4. Envia o código do pacote e cria a release com o zip.
 #    git e gh escrevem progresso no stderr; o resultado vem do código de saída.
@@ -63,6 +66,6 @@ git add -A -- . ':(exclude)dados'
 git commit -m "SWX2 $tag" -m $Notas
 git push 2>&1 | Out-Host
 if ($LASTEXITCODE -ne 0) { throw "git push falhou ($LASTEXITCODE)" }
-gh release create $tag $zip --title "SWX2 $tag" --notes $Notas
+gh release create $tag $zip $sha --title "SWX2 $tag" --notes $Notas
 if ($LASTEXITCODE -ne 0) { throw "gh release falhou ($LASTEXITCODE)" }
 Write-Host "Pronto: $tag publicada."
