@@ -18,9 +18,9 @@ O preview lateral não usa rolagem: reserva espaço para título, ações, estat
 
 ## Fontes e compilação
 
-O arquivo `swx2-frontend.patch` reúne as personalizações do frontend sobre o PCSX2 no commit `f0523f8acb1d3a765ee73b74cffec63093569199`. Inclui o código, os ícones e o tema usados pelo executável deste pacote. Não inclui jogos, BIOS ou saves.
+O arquivo `swx2-frontend.patch` reúne todas as alterações do SWX2 sobre o PCSX2 no commit indicado em `BASE_COMMIT.txt`, inclusive arquivos novos (`tools/swx2/`, `pcsx2-qt/LiquidGlass.h`, temas e ícones). O `publicar.ps1` gera o patch de novo a cada release, então ele sempre corresponde ao `SWX2.exe` publicado. Não inclui jogos, BIOS ou saves.
 
-Nesta máquina, o projeto completo está em `C:\Users\dougl\Documents\GitHub\pcsx2`. A pasta `SWX2` contém o aplicativo pronto para uso.
+O `publicar.ps1` procura o código em `..\pcsx2` (ao lado desta pasta) ou no caminho definido em `SWX2_FONTE`. A pasta `SWX2` contém o aplicativo pronto para uso.
 
 Para reproduzir as alterações em outra cópia do código-base:
 

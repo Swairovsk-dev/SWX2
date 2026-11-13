@@ -8,7 +8,11 @@ O SWX2 envia `POST /api/ping` a cada 5 minutos e sempre que um jogo abre ou fech
 { "id": "uuid aleatório da instalação", "v": "1.0.7", "game": "Crash Twinsanity", "serial": "SLES-52568" }
 ```
 
-O painel (`/`) e os dados (`/api/stats`) pedem usuário e senha. O IP não é gravado. Avisos com mais de 90 dias são apagados.
+O painel (`/`) e os dados (`/api/stats`) pedem usuário e senha. Depois de 10 senhas erradas por IP (ou 100 no total) em um minuto, o login fica bloqueado até o minuto acabar. O IP não é gravado. Avisos com mais de 90 dias são apagados.
+
+O envio é **opcional**: o SWX2 pergunta na primeira abertura e só manda avisos de quem aceitou (menu "..." da biblioteca para mudar).
+
+`TRUST_CF=0` faz o limite por IP ignorar o cabeçalho `cf-connecting-ip` e usar o `x-forwarded-for` do proxy reverso. Use quando o domínio **não** estiver com o proxy da Cloudflare ligado: sem a Cloudflare na frente, qualquer um pode falsificar esse cabeçalho.
 
 ## Deploy no Dokploy
 

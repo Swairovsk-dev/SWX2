@@ -65,6 +65,11 @@ Se o pacote for movido para outro computador ou pasta, revise os caminhos da BIO
 
 Resoluções internas maiores e melhorias gráficas podem aumentar a exigência de processamento. Se um jogo apresentar lentidão ou falhas visuais, revise as opções gráficas e os ajustes específicos desse jogo. Estados salvos podem ter limitações de compatibilidade entre versões; mantenha também saves nos cartões de memória virtuais.
 
+### Privacidade e atualizações
+
+- **Estatísticas de uso (opcional):** na primeira abertura, o SWX2 pergunta se você quer enviar estatísticas anônimas. Se aceitar, a cada 5 minutos ele envia um código aleatório da instalação, a versão do SWX2 e o nome e o serial do jogo aberto. Nada de nome, arquivos, caminhos ou hardware. Para mudar a escolha, use **"..." → Enviar estatísticas de uso anônimas** na biblioteca. Ao desligar, o código da instalação é apagado.
+- **Atualizações:** ao abrir, o SWX2 consulta as releases deste repositório. A atualização só é instalada se o SHA-256 do arquivo baixado conferir. Os arquivos substituídos ficam como `.old` até a nova versão abrir corretamente. `dados/`, `jogos/` e `bios/` nunca são alterados.
+
 ### Créditos e licenças
 
 O SWX2 é baseado no trabalho do projeto **PCSX2**, distribuído sob a **GNU GPL v3**. Os avisos de licença estão em `licencas/GPL.html` e `licencas/ThirdPartyLicenses.html`. A identidade visual personalizada do SWX2 não substitui os créditos do projeto original nem as licenças dos componentes utilizados.
@@ -127,6 +132,11 @@ If you move the package to another computer or folder, review the BIOS and game 
 You need a Windows computer compatible with the executable and its included libraries, along with suitable graphics drivers. No single hardware configuration guarantees the same performance in every game.
 
 Higher internal resolutions and graphics enhancements can increase processing demands. If a game runs slowly or displays visual glitches, review its graphics options and game-specific settings. Save states may have compatibility limitations across versions; keep regular saves on virtual memory cards as well.
+
+### Privacy and updates
+
+- **Usage statistics (optional):** on first launch, SWX2 asks whether you want to send anonymous statistics. If you agree, every 5 minutes it sends a random install code, the SWX2 version, and the title and serial of the running game. No name, files, paths, or hardware. To change your choice, use **"..." → Enviar estatísticas de uso anônimas** in the library. Turning it off deletes the install code.
+- **Updates:** on launch, SWX2 checks this repository's releases. An update is only installed if the downloaded file's SHA-256 matches. Replaced files are kept as `.old` until the new version starts successfully. `dados/`, `jogos/`, and `bios/` are never modified.
 
 ### Credits and licenses
 

@@ -97,13 +97,34 @@ prune();
 setInterval(prune, 86400000).unref();
 
 // Limite simples por IP (só em memória, o IP não é gravado).
+// cf-connecting-ip só é confiável quando o servidor recebe tráfego apenas pela Cloudflare;
+// sem ela (TRUST_CF=0), usa o x-forwarded-for do proxy reverso (Traefik do Dokploy) ou o socket.
+const TRUST_CF = process.env.TRUST_CF !== '0';
 const hits = new Map();
-setInterval(() => hits.clear(), 60000).unref();
+const failures = new Map();
+let failuresTotal = 0;
+setInterval(() => { hits.clear(); failures.clear(); failuresTotal = 0; }, 60000).unref();
+function clientIp(req) {
+  if (TRUST_CF && req.headers['cf-connecting-ip']) return String(req.headers['cf-connecting-ip']);
+  const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return forwarded || req.socket.remoteAddress || '?';
+}
 function limited(req) {
-  const ip = req.headers['cf-connecting-ip'] || req.socket.remoteAddress || '?';
+  const ip = clientIp(req);
   const count = (hits.get(ip) || 0) + 1;
   hits.set(ip, count);
   return count > 30;
+}
+
+// Senha errada: no máximo 10 tentativas por IP e 100 no total por minuto.
+// O limite total vale mesmo se alguém falsificar o cabeçalho de IP.
+function loginBlocked(req) {
+  return (failures.get(clientIp(req)) || 0) >= 10 || failuresTotal >= 100;
+}
+function loginFailed(req) {
+  const ip = clientIp(req);
+  failures.set(ip, (failures.get(ip) || 0) + 1);
+  failuresTotal++;
 }
 
 const digest = (text) => createHash('sha256').update(text).digest();
@@ -145,8 +166,12 @@ http.createServer((req, res) => {
   if (req.method === 'GET' && url.pathname === '/health') return send(res, 200, 'text/plain', 'ok');
 
   if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/api/stats')) {
-    if (!authorized(req))
+    if (loginBlocked(req)) return send(res, 429, 'text/plain', 'muitas tentativas, espere um minuto');
+    if (!authorized(req)) {
+      // Sem cabeçalho é só o navegador pedindo a senha; não conta como tentativa.
+      if (req.headers.authorization) loginFailed(req);
       return send(res, 401, 'text/plain', 'Login necessário', { 'WWW-Authenticate': 'Basic realm="Painel SWX2", charset="UTF-8"' });
+    }
     if (url.pathname === '/') return send(res, 200, 'text/html; charset=utf-8', dashboard);
     return send(res, 200, 'application/json; charset=utf-8', JSON.stringify(stats()));
   }

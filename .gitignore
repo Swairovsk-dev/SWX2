@@ -12,6 +12,15 @@
 /dados/videos/
 /dados/inis/playtime.dat
 
+# Configurações desta máquina: têm caminhos pessoais e o SWX2InstallId, que não pode ser compartilhado.
+/dados/inis/PCSX2.ini
+/dados/inis/debuggerlayouts/
+/dados/inis/debuggersettings/
+
 # Estado e cópias de segurança locais.
 /state/
 *.bak
+
+# Restos de atualização automática.
+*.old
+/atualizacao-antigos.txt
